@@ -28,11 +28,10 @@ def create_canvas(width, height, colors, block_size, chaos_parameter):
     # Initialize variables for drawing the golden spiral
     x, y = width // 2, height // 2  # Start in the center of the canvas
     angle = 0
-    color_width = width // len(colors)
 
     for color in colors:
-        # Calculate the size of the rectangle based on the golden ratio
-        size = int(color_width * phi) 
+        # Use the red component of the RGB tuple for the size calculation
+        size = int(color[0] * phi)
 
         # Calculate the chaotic modification to the angle
         chaotic_factor = logistic_map(math.cos(math.radians(angle)), chaos_parameter)
@@ -49,19 +48,22 @@ def create_canvas(width, height, colors, block_size, chaos_parameter):
 
         # Draw the cage-like block
         print(size)
-        if (int(size % 2) == 1):
+        if size % 2 == 1:
+            print("odd")
+
+            # Since odd we grab the color compliment
+            compliment = tuple(255 - value for value in color)
+
+            draw.ellipse([x, y, x + size, y + size], fill=compliment)
+        else:    
             print("even")
             draw.rectangle([x, y, x + size, y + size], fill=color)
-        else:    
-            print("odd")
-            draw.ellipse([x, y, x + size, y + size], fill=color)
-        #draw.rectangle([x, y, x + size, y + size], outline=(0, 0, 0), width=2)
 
     return canvas
 
-fibonacci_length = 100  # You can change this to the desired length of the sequence
+fibonacci_length = 1000  # You can change this to the desired length of the sequence
 block_size = 10  # You can adjust the block size as needed
-chaos_parameter = 2.4  # You can experiment with different chaos parameters
+chaos_parameter = math.pi  # You can experiment with different chaos parameters
 
 # Generate Fibonacci color sequence
 fibonacci_colors = fibonacci_sequence_for_colors(fibonacci_length)
@@ -70,9 +72,9 @@ fibonacci_colors = fibonacci_sequence_for_colors(fibonacci_length)
 rgb_colors = [hex_to_rgb(color) for color in fibonacci_colors]
 
 # Create the canvas with chaos theory modification
-canvas_width = 100  # inches
-canvas_height = 100  # inches
+canvas_width = 21  # inches
+canvas_height = 9  # inches
 canvas = create_canvas(int(canvas_width * 100), int(canvas_height * 100), rgb_colors, block_size, chaos_parameter)
 
 # Save the canvas as an image file (e.g., PNG)
-canvas.save("FibPhot/chaos2.png")
+canvas.save("FibPhot/chaos_compliment.png")
